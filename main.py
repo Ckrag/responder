@@ -32,7 +32,9 @@ class SqlConnector(object):
             return True, row_content
 
     def create_db_if_needed(self):
+        # create file if it doesn't exist
         conn = sqlite3.connect(self.db_filename)
+        # make table if it doesn't exist
         self.create_apis_table(conn)
 
     def add_new_api(self, db, url):
@@ -59,13 +61,18 @@ class SqlConnector(object):
         db.commit()
 
     def create_apis_table(self, db):
-        db.execute('''CREATE TABLE apis_table (
-                        id  INTEGER UNIQUE
-                                    NOT NULL
-                                    PRIMARY KEY AUTOINCREMENT,
-                        url TEXT    NOT NULL
-                    )''')
-        db.commit()
+        result = db.execute("SELECT * FROM sqlite_master WHERE type='table' AND name='apis_table'")
+
+        if len(result.fetchall()) == 0:
+            db.execute('''CREATE TABLE apis_table (
+                id  INTEGER UNIQUE
+                            NOT NULL
+                            PRIMARY KEY AUTOINCREMENT,
+                url TEXT    NOT NULL
+            )''')
+            db.commit()
+
+
 
     def store_data(self, results):
         db = sqlite3.connect(self.db_name)
