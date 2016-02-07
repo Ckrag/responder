@@ -1,0 +1,2 @@
+CherryPy==5.0.1
+requests==2.9.1

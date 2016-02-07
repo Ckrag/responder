@@ -1,3 +1,7 @@
+# custom files
+responder_db.sqlite
+env
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
