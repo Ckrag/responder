@@ -22,20 +22,60 @@ class GraphGrapper(object):
         data = SqlConnector().get_graph_data(self.__ids_to_query, 5)
 
         # Builds presentable data
-        apis_list = []
+        timestamp_collection = []
+
+
+        """
+        returned format:
+        {
+            "timestamps" : [
+                {
+                    "timestamp" : 12345678,
+                    "apis_with_respondtime" : [
+                        {
+                            "url" : "url",
+                            "respondtime" : 213214
+                        }
+                    ]
+                }
+            ]
+        }
+        """
 
         # We can trust that the number of sets returned from the graph_data-query is atleast the number of sets returned from the apis-ids returned from the get_apis query,
         # Since the before mentioned query depends on the later
-        for i in range (0, len(data)):
-            api_data = {
-                "url" : self.__apis_info[i][1],
-                "reponses" : data[i][1]
+        unique_timestamps = []
+        for index_i, item in enumerate(data):
+            # Get unique timestamps
+            for index_j, tuple in enumerate(item[1]):
+                timestamp = data[index_i][1][index_j][0]
+                if timestamp not in unique_timestamps:
+                    unique_timestamps.append(timestamp)
+
+        # Build 'timestamps' json-objects
+        for index, timestamp in enumerate(unique_timestamps):
+            # For each timestamp, find the responsetime and url of each api, and map it
+
+            apis_with_respondtime = {
+                "timestamp" : timestamp,
+                "api_reponsetimes" : [
+
+                ]
             }
-            apis_list.append(api_data)
+
+            for index_j, api_data in enumerate(data):
+                for time_tuple in enumerate(api_data[1]):
+                    if time_tuple[1][0] == timestamp:
+
+                        apis_with_respondtime["api_reponsetimes"].append(
+                            {
+                                "url" : self.__apis_info[index_j][1],
+                                "response_time" : time_tuple[1][1]
+                            }
+                        )
+
+            timestamp_collection.append(apis_with_respondtime)
 
 
         # Present data, return json obj
-        return { "api_data" : apis_list }
-
-    def format_json_data(self, data):
-        pass
+        return { "api_data" : timestamp_collection }
