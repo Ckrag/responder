@@ -1,7 +1,10 @@
 import sqlite3
 import time
 
-
+"""
+A is only allowed to close a database connection if it was also responsible for creating it.
+Methods that receive an instance of a database(connection) should leave the cleanup responsibility to the caller
+"""
 class SqlConnector(object):
 
     __db_filename = "responder_db.sqlite"
