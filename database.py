@@ -37,7 +37,6 @@ class SqlConnector(object):
                                                        PRIMARY KEY DESC,
                         response_time DECIMAL (24, 20) NOT NULL
                     )'''.format(id))
-        db.close()
         return id
 
 
