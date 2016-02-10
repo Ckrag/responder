@@ -3,8 +3,6 @@ from multiprocessing.dummy import Pool as ThreadPool
 import time
 import json
 import os.path
-import traceback
-import sys
 from database import SqlConnector
 
 
