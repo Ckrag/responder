@@ -3,6 +3,8 @@ from multiprocessing.dummy import Pool as ThreadPool
 import time
 import json
 import os.path
+import traceback
+import sys
 from database import SqlConnector
 
 
@@ -74,9 +76,14 @@ class Responser(object):
         self.db.store_data(results)
 
     def run(self):
-        while True:
-            self.get_response_times()
-            time.sleep(self.request_frequency_sec)
+        try:
+            while True:
+                self.get_response_times()
+                time.sleep(self.request_frequency_sec)
+
+        except KeyboardInterrupt:
+            print("Script stopped, ..exiting")
+
 
 if __name__ == '__main__':
     Responser()

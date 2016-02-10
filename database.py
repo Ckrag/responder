@@ -4,14 +4,13 @@ import time
 
 class SqlConnector(object):
 
-    db_filename = "responder_db.sqlite"
+    __db_filename = "responder_db.sqlite"
 
     def __init__(self):
         self.create_db_if_needed()
 
     def api_exists(self, url, db):
         result = db.execute("SELECT id, url FROM apis_table WHERE url=(?)", (url,))
-        db.close()
         row_content = result.fetchone()
 
         if row_content is None:
@@ -20,7 +19,7 @@ class SqlConnector(object):
 
     def create_db_if_needed(self):
         # create file if it doesn't exist
-        db = sqlite3.connect(self.db_filename)
+        db = sqlite3.connect(self.__db_filename)
         # make table if it doesn't exist
         self.create_apis_table(db)
         db.close()
@@ -33,21 +32,20 @@ class SqlConnector(object):
         id = str(result.fetchone()[0])
 
         # Create time table
-        db.execute('''CREATE TABLE time_table_''' + id + ''' (
+        db.execute('''CREATE TABLE time_table_{0} (
                         timestamp     INT              NOT NULL
                                                        PRIMARY KEY DESC,
                         response_time DECIMAL (24, 20) NOT NULL
-                    )''')
+                    )'''.format(id))
         db.close()
         return id
 
 
     def add_to_existing_api(self, db, id, response_time):
         current_time = int(time.time())
-        db.execute('''INSERT INTO time_table_''' + str(id) + '''(timestamp, response_time)
-                    VALUES (?,?)''', (current_time, response_time))
+        db.execute('''INSERT INTO time_table_{0}(timestamp, response_time)
+                    VALUES (?,?)'''.format(id), (current_time, response_time))
         db.commit()
-        db.close()
 
     def create_apis_table(self, db):
         result = db.execute("SELECT * FROM sqlite_master WHERE type='table' AND name='apis_table'")
@@ -63,7 +61,7 @@ class SqlConnector(object):
 
 
     def get_graph_data(self, ids, limit = None, earliest_time = None):
-        db = sqlite3.connect(self.db_filename)
+        db = sqlite3.connect(self.__db_filename)
         #ids = db.execute("SELECT * FROM apis_table WHERE ")
 
         limit_str = ""
@@ -72,7 +70,7 @@ class SqlConnector(object):
 
         results = []
         for id in ids:
-            result = db.execute("SELECT timestamp,response_time FROM time_table_" + str(id) + " ORDER BY timestamp desc " + limit_str).fetchall()
+            result = db.execute("SELECT timestamp,response_time FROM time_table_{0} ORDER BY timestamp desc {1}".format(str(id), limit_str)).fetchall()
             results.append((id, result))
         db.close()
         return results
@@ -80,7 +78,7 @@ class SqlConnector(object):
 
     def get_apis(self):
 
-        db = sqlite3.connect(self.db_filename)
+        db = sqlite3.connect(self.__db_filename)
         result = db.execute("SELECT id, url FROM apis_table").fetchall()
         db.close()
         return result
@@ -88,7 +86,7 @@ class SqlConnector(object):
 
     def store_data(self, results):
 
-        db = sqlite3.connect(self.db_filename)
+        db = sqlite3.connect(self.__db_filename)
 
         for request_result in results:
             exists, row = (self.api_exists(request_result["url"], db))
