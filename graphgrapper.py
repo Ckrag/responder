@@ -43,7 +43,8 @@ class GraphGrapper(object):
         }
         """
 
-        # We can trust that the number of sets returned from the graph_data-query is atleast the number of sets returned from the apis-ids returned from the get_apis query,
+        # We can trust that the number of sets returned from the graph_data-query is atleast the number of sets
+        # returned from the apis-ids returned from the get_apis query,
         # Since the before mentioned query depends on the later
         unique_timestamps = []
         for index_i, item in enumerate(data):
@@ -54,7 +55,7 @@ class GraphGrapper(object):
                     unique_timestamps.append(timestamp)
 
         # Build 'timestamps' json-objects
-        for index, timestamp in enumerate(unique_timestamps):
+        for index, timestamp in reversed(list(enumerate(unique_timestamps))):
             # For each timestamp, find the responsetime and url of each api, and map it
 
             apis_with_respondtime = {
@@ -75,9 +76,13 @@ class GraphGrapper(object):
 
             timestamp_collection.append(apis_with_respondtime)
 
+        api_names = []
+        for api_info in self.__apis_info:
+            api_names.append(api_info[1])
 
         # Present data, return json obj
         return json.dumps({
             "api_data" : timestamp_collection,
-            "api_count" : len(data)
+            "api_count" : len(data),
+            "api_names" : api_names
         })
