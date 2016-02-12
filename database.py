@@ -43,8 +43,7 @@ class SqlConnector(object):
         return id
 
 
-    def add_to_existing_api(self, db, id, response_time):
-        current_time = int(time.time())
+    def add_to_existing_api(self, db, id, current_time, response_time):
         db.execute('''INSERT INTO time_table_{0}(timestamp, response_time)
                     VALUES (?,?)'''.format(id), (current_time, response_time))
         db.commit()
@@ -86,8 +85,7 @@ class SqlConnector(object):
         return result
 
 
-    def store_data(self, results):
-
+    def store_data(self, results, current_time):
         db = sqlite3.connect(self.__db_filename)
 
         for request_result in results:
@@ -95,10 +93,10 @@ class SqlConnector(object):
 
             if exists:
                 print(request_result["url"] + " existed!")
-                self.add_to_existing_api(db, row[0], request_result["time"])
+                self.add_to_existing_api(db, row[0], current_time, request_result["time"])
             else:
                 print(request_result["url"] + " didn't exist!")
                 id = self.add_new_api(db, request_result["url"])
-                self.add_to_existing_api(db, id, request_result["time"])
+                self.add_to_existing_api(db, id, current_time, request_result["time"])
 
         db.close()

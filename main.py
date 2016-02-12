@@ -66,12 +66,13 @@ class Responser(object):
 
     def get_response_times(self):
         pool = ThreadPool(4)
+        current_time = int(time.time())
 
         results = pool.map(self.time_url_opening, self.urls)
         pool.close()
         pool.join()
 
-        self.db.store_data(results)
+        self.db.store_data(results, current_time)
 
     def run(self):
         try:
