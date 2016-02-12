@@ -1,4 +1,5 @@
 from database import SqlConnector
+import json
 
 
 class GraphGrapper(object):
@@ -19,7 +20,7 @@ class GraphGrapper(object):
     def get_data(self):
 
         # Query data for ids
-        data = SqlConnector().get_graph_data(self.__ids_to_query, 5)
+        data = SqlConnector().get_graph_data(self.__ids_to_query, 10)
 
         # Builds presentable data
         timestamp_collection = []
@@ -58,16 +59,14 @@ class GraphGrapper(object):
 
             apis_with_respondtime = {
                 "timestamp" : timestamp,
-                "api_reponsetimes" : [
-
-                ]
+                "api_responsetimes" : []
             }
 
             for index_j, api_data in enumerate(data):
                 for time_tuple in enumerate(api_data[1]):
                     if time_tuple[1][0] == timestamp:
 
-                        apis_with_respondtime["api_reponsetimes"].append(
+                        apis_with_respondtime["api_responsetimes"].append(
                             {
                                 "url" : self.__apis_info[index_j][1],
                                 "response_time" : time_tuple[1][1]
@@ -78,4 +77,7 @@ class GraphGrapper(object):
 
 
         # Present data, return json obj
-        return { "api_data" : timestamp_collection }
+        return json.dumps({
+            "api_data" : timestamp_collection,
+            "api_count" : len(data)
+        })
