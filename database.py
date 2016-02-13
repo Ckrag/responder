@@ -92,10 +92,10 @@ class SqlConnector(object):
             exists, row = (self.api_exists(request_result["url"], db))
 
             if exists:
-                print(request_result["url"] + " existed!")
+                # print(request_result["url"] + " existed!")
                 self.add_to_existing_api(db, row[0], current_time, request_result["time"])
             else:
-                print(request_result["url"] + " didn't exist!")
+                # print(request_result["url"] + " didn't exist!")
                 id = self.add_new_api(db, request_result["url"])
                 self.add_to_existing_api(db, id, current_time, request_result["time"])
 
