@@ -1,7 +1,10 @@
 var requestInterval = 3000;
 var mainChart = null;
+var timespan = 20;
 
 var chartData = null;
+
+var colorApiMap = [];
 
 $( document ).ready(function() {
   init();
@@ -10,6 +13,11 @@ $( document ).ready(function() {
 function init(){
   // Show some loading or something til first ajax request returns
   startEventLoop();
+}
+
+function addApiVisual(name, color){
+  var html_string = "<div class='api_entry'><p class='api_name'><span style='background-color:" + color + ";'class='api_color'></span>" + name + "</p></div>";
+  $("#api_info_box").append(html_string);
 }
 
 function loadData(){
@@ -32,6 +40,14 @@ function loadData(){
 
 function onDataLoaded(jsonData){
   var dataObject = JSON.parse(jsonData);
+
+  if(dataObject.api_count == 0){
+    // No apis, do nothing.
+    // When we handle changing number of apis, start out drawing an empty
+    // Some day :o)
+    return;
+  }
+
   if(chartData === null){
     createChartData(dataObject);
   } else {
@@ -41,7 +57,12 @@ function onDataLoaded(jsonData){
 
 function configChart(chart, chartData){
   var chartContext = document.getElementById('main-chart').getContext('2d');
-  mainChart = new Chart(chartContext).Line(chartData);
+  mainChart = new Chart(chartContext).Line(chartData, {
+    scaleOverride : true,
+    scaleSteps : 3,
+    scaleStepWidth: 1,
+    scaleStartValue: 0
+  });
 }
 
 function createChartData(dataObject){
@@ -77,9 +98,17 @@ function createChartData(dataObject){
 }
 
 function createDataSet(apiName){
+  var color = getRandomColors(1)[0];
+  colorApiMap.push({ 
+    name : apiName,
+    color : color
+   });
+
+  addApiVisual(apiName, color);
+
   return {
-      fillColor : "rgba(172,194,132,0.2)",
-      strokeColor : getRandomColors(1),
+      fillColor : "rgba(172,194,132,0.0)",
+      strokeColor : color,
       pointColor : "#fff",
       pointStrokeColor : "#9DB86D",
       data : [],
@@ -115,7 +144,11 @@ function updateChartData(dataObject){
   var offsetIndex = getArrayChangeOffset(newReponseTimestamps, chartData.unixTimeStamps);
 
   for (var i = 0; i < offsetIndex; i++) {
-    mainChart.removeData();
+
+    // Don't remove old entries until the graph shows full 'timespan'
+    if(chartData.labels.length == timespan){
+      mainChart.removeData();
+    }
 
     var newData = [];
     //update old datasets by iterating over them.
@@ -139,8 +172,8 @@ function getArrayChangeOffset(newArray, oldArray){
 
   //validity check
   if(newArray.length != oldArray.length){
-    // if not, return length of previous list, as a way of getting it to wipe the old list
-    return oldArray.length;
+    // if not, simply return the difference, so it knows how many new values were added
+    return newArray.length - oldArray.length;
   }
 
   var indexOffset = 0;
