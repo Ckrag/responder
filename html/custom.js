@@ -9,9 +9,7 @@ $( document ).ready(function() {
 
 function init(){
   // Show some loading or something til first ajax request returns
-
-  //startEventLoop();
-  loadData();
+  startEventLoop();
 }
 
 function loadData(){
@@ -42,10 +40,8 @@ function onDataLoaded(jsonData){
 }
 
 function configChart(chart, chartData){
-  console.log("chartData: ");
-  console.log(chartData);
   var chartContext = document.getElementById('main-chart').getContext('2d');
-  chart = new Chart(chartContext).Line(chartData);
+  mainChart = new Chart(chartContext).Line(chartData);
 }
 
 function createChartData(dataObject){
@@ -93,6 +89,7 @@ function createDataSet(apiName){
 
 // WHAT IF WE DONT HAVE MAX YET. NEW DATA CAN HOLD LONGER SETS !!!!!
 function updateChartData(dataObject){
+
   var api_count = dataObject.api_count;
   var api_names = dataObject.api_names;
   var data = dataObject.api_data;
@@ -114,29 +111,27 @@ function updateChartData(dataObject){
     };
     newResponseTimeSets.push(responseSet);
   };
-  console.log(newLabels)
-  console.log(newResponseTimeSets);
 
-  
   var offsetIndex = getArrayChangeOffset(newReponseTimestamps, chartData.unixTimeStamps);
-  console.log(offsetIndex);
-  console.log(newReponseTimestamps);
-  console.log(chartData.unixTimeStamps);
 
   for (var i = 0; i < offsetIndex; i++) {
-    //chartData.removeData();
+    mainChart.removeData();
 
     var newData = [];
     //update old datasets by iterating over them.
     for (var j = 0; j < chartData.datasets.length; j++) {
-      newData.push(newResponseTimeSets[j][newResponseTimeSets[j].length - offsetIndex + i])
+      //console.log("response lookup: " + newResponseTimeSets.length + " - 1 - " + i + "["+j+"]");
+      newData.push(newResponseTimeSets[newResponseTimeSets.length - offsetIndex + i][j]);
     };
-    console.log("New data:");
-    console.log(newData);
-    //chartData.addData(newData, offset);
+    mainChart.addData(newData, newLabels[newLabels.length - offsetIndex + i]);
   };
-  
-  
+
+  chartData.unixTimeStamps = newReponseTimestamps;
+  for (var i = 0; i < newResponseTimeSets.length; i++) {
+    for (var j = 0; j < chartData.datasets.length; j++) {
+      chartData.datasets[j][i] = newResponseTimeSets[i][j];
+    };
+  };
 }
 
 // Method expects two arrays of equal length
@@ -185,8 +180,6 @@ function getArrayChangeOffset(newArray, oldArray){
   example would return 3
   **/
 
-  console.log(highestIndex);
-
   return highestIndex;
   
 }
@@ -205,10 +198,25 @@ function convertUnixToReadable(unixTimeStamp){
   var minutes = date.getMinutes();
   var seconds = date.getSeconds();
 
+  if(hours.length == 1){
+    hours = "0" + hours;
+  }
+
+  if(minutes.length == 1){
+    minutes = "0" + minutes;
+  }
+
+  if(seconds.length == 1){
+    seconds = "0" + seconds;
+  }
+
   return hours + ":" + minutes + ":" + seconds;
 }
 
 function startEventLoop(){
+  // Load instantly first time
+  loadData()
+
   var action = function() {
       loadData();
   };
