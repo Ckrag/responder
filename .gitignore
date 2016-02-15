@@ -3,7 +3,7 @@ responder_db.sqlite
 env
 .idea/
 sources.json
-sources.json~
+*~
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
