@@ -86,3 +86,9 @@ class GraphGrapper(object):
             "api_count" : len(data),
             "api_names" : api_names
         })
+
+    def enrich_api_data(self, api_data):
+        #Waaaaay too much trust here
+        #TODO: Less trust
+        with open("sources.json", 'r') as new_source_file:
+            pass
