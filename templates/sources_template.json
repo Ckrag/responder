@@ -1,0 +1,9 @@
+{
+  "sources": [
+		{
+			"url":"http://your.url",
+			"pretty_name":"your optional pretty url",
+			"pretty_color":"#000000",
+		}
+	]
+}

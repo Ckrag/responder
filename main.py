@@ -12,7 +12,9 @@ class Responser(object):
     request_frequency_sec = 3
     db = None
     source_filename = "sources.json"
-    #userAgent = 'Your friendly neighborhood API-response-tracker'
+    template_path = "templates/"
+    source_template_filename = "sources_template.json"
+    userAgent = 'Your friendly neighborhood API-response-tracker - https://github.com/ckrag/responder'
 
     def __init__(self):
         if self.init():
@@ -38,8 +40,10 @@ class Responser(object):
                 else:
                     print("Found empty source, please append URIs to the sources list inside " + self.source_filename + " in the project-root-directory")
         else:
-            with open(self.source_filename, 'w') as new_source_file:
-                new_source_file.write('''{\n  "sources": []\n}''')
+            with open(self.template_path + self.source_template_filename, 'r') as template:
+                source_template = template.read()
+                with open(self.source_filename, 'w') as new_source_file:
+                    new_source_file.write(source_template)
             print("Was unable to find " + self.source_filename + ", created empty source, please append URIs to the sources list inside " + self.source_filename + " in the project-root-directory")
         return False
 
@@ -60,7 +64,8 @@ class Responser(object):
 
     def time_url_opening(self, url):
         pretime = time.time()
-        requests.get(url)
+        requestResult = requests.get(url=url, data=None, headers={'Connection':'close', 'user-agent':self.userAgent})
+        requestResult.close()
         requestTime = time.time() - pretime
         return { "time" : requestTime, "url" : url }
 
