@@ -8,13 +8,14 @@ from database import SqlConnector
 
 class Responser(object):
 
-    urls = None
     request_frequency_sec = 3
     db = None
     source_filename = "sources.json"
     template_path = "templates/"
     source_template_filename = "sources_template.json"
     userAgent = 'Your friendly neighborhood API-response-tracker - https://github.com/ckrag/responder'
+
+    sources_cache = None
 
     def __init__(self):
         if self.init():
@@ -25,11 +26,10 @@ class Responser(object):
             with open(self.source_filename) as source_data:
                 sources = json.load(source_data)["sources"]
                 if len(sources) > 0:
-                    self.urls = sources
-
-                    invalid_sources = self.get_invalid_sources(self.urls)
+                    invalid_sources = self.get_invalid_sources(sources)
                     if len(invalid_sources) == 0:
                         self.db = SqlConnector()
+                        self.sources_cache = sources
                         print("Successfully loaded " + str(len(sources)) + " source(s)")
                         return True
                     else:
@@ -50,30 +50,31 @@ class Responser(object):
     def get_invalid_sources(self, sources):
         sUri = "https://"
         uri = "http://"
-        invalidUris = []
+        invalid_uris = []
 
         for source in sources:
-            #TODO: This always fails.. I might just be too tired
-            if source[:len(sUri)] == sUri or source[:len(uri)] == uri:
+            source_url = source["url"]
+            if source_url[:len(sUri)] == sUri or source_url[:len(uri)] == uri:
                 pass
             else:
-                invalidUris.append(source)
+                invalid_uris.append(source_url)
 
+        return invalid_uris
 
-        return invalidUris
-
-    def time_url_opening(self, url):
+    def time_url_opening(self, source):
+        url = source["url"]
         pretime = time.time()
-        requestResult = requests.get(url=url, data=None, headers={'Connection':'close', 'user-agent':self.userAgent})
-        requestResult.close()
-        requestTime = time.time() - pretime
-        return { "time" : requestTime, "url" : url }
+        request_result = requests.get(url=url, data=None, headers={'Connection':'close', 'user-agent':self.userAgent})
+        response_code = request_result.status_code
+        request_result.close()
+        reques_time = time.time() - pretime
+        return { "time" : reques_time, "url" : url, "code" : response_code}
 
     def get_response_times(self):
         pool = ThreadPool(4)
         current_time = int(time.time())
 
-        results = pool.map(self.time_url_opening, self.urls)
+        results = pool.map(self.time_url_opening, self.sources_cache)
         pool.close()
         pool.join()
 

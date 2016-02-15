@@ -38,14 +38,15 @@ class SqlConnector(object):
         db.execute('''CREATE TABLE time_table_{0} (
                         timestamp     INT              NOT NULL
                                                        PRIMARY KEY DESC,
-                        response_time DECIMAL (24, 20) NOT NULL
+                        response_time DECIMAL (24, 20) NOT NULL,
+                        response_code TEXT NOT NULL
                     )'''.format(id))
         return id
 
 
-    def add_to_existing_api(self, db, id, current_time, response_time):
-        db.execute('''INSERT INTO time_table_{0}(timestamp, response_time)
-                    VALUES (?,?)'''.format(id), (current_time, response_time))
+    def add_to_existing_api(self, db, id, current_time, response_time, response_code):
+        db.execute('''INSERT INTO time_table_{0}(timestamp, response_time, response_code)
+                    VALUES (?,?,?)'''.format(id), (current_time, response_time, response_code))
         db.commit()
 
     def create_apis_table(self, db):
@@ -93,10 +94,10 @@ class SqlConnector(object):
 
             if exists:
                 # print(request_result["url"] + " existed!")
-                self.add_to_existing_api(db, row[0], current_time, request_result["time"])
+                self.add_to_existing_api(db, row[0], current_time, request_result["time"], request_result["code"])
             else:
                 # print(request_result["url"] + " didn't exist!")
                 id = self.add_new_api(db, request_result["url"])
-                self.add_to_existing_api(db, id, current_time, request_result["time"])
+                self.add_to_existing_api(db, id, current_time, request_result["time"], request_result["code"])
 
         db.close()
