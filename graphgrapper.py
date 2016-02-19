@@ -1,10 +1,12 @@
 from database import SqlConnector
+from utils import Util
 import json
 
 
 class GraphGrapper(object):
 
     def __init__(self, api_ids = None):
+
         # Get api info
         self.__apis_info = SqlConnector().get_apis()
 
@@ -15,7 +17,6 @@ class GraphGrapper(object):
             self.__ids_to_query = []
             for data in self.__apis_info:
                 self.__ids_to_query.append(data[0])
-
 
     def get_data(self):
 
@@ -85,10 +86,10 @@ class GraphGrapper(object):
             "api_data" : timestamp_collection,
             "api_count" : len(data),
             "api_names" : api_names
+            #"api_meta" : self.get_meta_data()
         })
 
-    def enrich_api_data(self, api_data):
-        #Waaaaay too much trust here
-        #TODO: Less trust
-        with open("sources.json", 'r') as new_source_file:
-            pass
+    def get_meta_data(self):
+        sources = Util.get_source_content()
+        if sources is None:
+            return None
