@@ -20,7 +20,7 @@ class GraphGrapper(object):
     def get_data(self):
 
         # Query data for ids
-        data = SqlConnector().get_graph_data(self.__ids_to_query, 20)
+        data = SqlConnector().get_graph_data(self.__ids_to_query, 40)
 
         # Builds presentable data
         timestamp_collection = []

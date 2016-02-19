@@ -1,6 +1,6 @@
 var requestInterval = 3000;
 var mainChart = null;
-var timespan = 20;
+var timespan = 40;
 
 var chartData = null;
 
