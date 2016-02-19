@@ -1,0 +1,7 @@
+{
+  "settings": {
+		"graph_time_span":40,
+		"web_request_interval":3000,
+		"graph_update_interval":3000
+	}
+}
