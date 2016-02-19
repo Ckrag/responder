@@ -1,6 +1,6 @@
 var requestInterval = 3000;
 var mainChart = null;
-var timespan = 20;
+var timespan = 40;
 
 var chartData = null;
 
@@ -227,9 +227,9 @@ function getRandomColors(numberOfColors){
 
 function convertUnixToReadable(unixTimeStamp){
   var date = new Date(unixTimeStamp*1000);
-  var hours = date.getHours();
-  var minutes = date.getMinutes();
-  var seconds = date.getSeconds();
+  var hours = String(date.getHours());
+  var minutes = String(date.getMinutes());
+  var seconds = String(date.getSeconds());
 
   if(hours.length == 1){
     hours = "0" + hours;
