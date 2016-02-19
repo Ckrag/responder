@@ -30,30 +30,22 @@ class Responser(object):
             return True
         return False
 
-
-
     def time_url_opening(self, source):
         url = source["url"]
         pretime = time.time()
         try:
             request_result = requests.get(url=url, data=None, headers={'Connection':'close', 'user-agent':self.userAgent})
         except ConnectionError as e:
-            self.log_error(e)
+            self.log_error(e, url)
             return None
         except SocketError as e:
-            self.log_error(e)
+            self.log_error(e, url)
             return None
 
         response_code = request_result.status_code
         request_result.close()
         reques_time = time.time() - pretime
         return { "time" : reques_time, "url" : url, "code" : response_code}
-
-
-    def format_time(self, time_string):
-        if len(time_string) == 0:
-            return '0' + time_string
-        return time_string
 
     def get_response_times(self):
         pool = ThreadPool(4)
@@ -68,10 +60,10 @@ class Responser(object):
         if not None in results:
             self.db.store_data(results, current_time)
 
-    def log_error(self, exception):
+    def log_error(self, exception, url):
         timestamp = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         with open(self.logging_path + "request_log", 'a') as log_file:
-            log_file.write("\n" + timestamp + "\n" + exception + "\n")
+            log_file.write("\n" + "Time: "+ timestamp + "\n" + "Url: " + url + "\n" + "Exception: " + str(exception) + "\n")
 
     def run(self):
         try:
