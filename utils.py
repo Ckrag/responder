@@ -1,6 +1,7 @@
 import os.path
 import json
 
+
 class Util(object):
 
     @staticmethod
