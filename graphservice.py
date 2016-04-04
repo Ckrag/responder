@@ -13,11 +13,7 @@ class MyServer(BaseHTTPRequestHandler):
         json = str(GraphGrapper().get_data())
         query_string = urlparse(self.path).query
 
-        #handy for debugging
-        if(query_string == "json"):
-            response = json
-        else:
-            response = "jsonpCallback({0})".format(json)
+        response = "jsonpCallback({0})".format(json)
 
         self.send_response(200)
         self.send_header("Content-type", "application/json")
