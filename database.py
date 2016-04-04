@@ -39,7 +39,7 @@ class SqlConnector(object):
                         timestamp     INT              NOT NULL
                                                        PRIMARY KEY DESC,
                         response_time DECIMAL (24, 20) NOT NULL,
-                        response_code TEXT NOT NULL
+                        response_code INT NOT NULL
                     )'''.format(id))
         return id
 
@@ -72,7 +72,7 @@ class SqlConnector(object):
 
         results = []
         for id in ids:
-            result = db.execute("SELECT timestamp,response_time FROM time_table_{0} ORDER BY timestamp desc {1}".format(str(id), limit_str)).fetchall()
+            result = db.execute("SELECT timestamp,response_time, response_code FROM time_table_{0} ORDER BY timestamp desc {1}".format(str(id), limit_str)).fetchall()
             results.append((id, result))
         db.close()
         return results

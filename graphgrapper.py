@@ -18,7 +18,7 @@ class GraphGrapper(object):
             for data in self.__apis_info:
                 self.__ids_to_query.append(data[0])
 
-    def get_data(self):
+    def get_data(self, sources = None):
 
         # Query data for ids
         data = SqlConnector().get_graph_data(self.__ids_to_query, 40)
@@ -70,25 +70,43 @@ class GraphGrapper(object):
 
                         apis_with_respondtime["api_responsetimes"].append(
                             {
-                                "url" : self.__apis_info[index_j][1],
-                                "response_time" : time_tuple[1][1]
+                                "index_ref" : self.__apis_info[index_j][0],
+                                "response_time" : time_tuple[1][1],
+                                "reponse_code" : time_tuple[1][2]
                             }
                         )
 
             timestamp_collection.append(apis_with_respondtime)
 
-        api_names = []
-        for api_info in self.__apis_info:
-            api_names.append(api_info[1])
+
+        api_meta_data = []
+        for index, api_info in enumerate(self.__apis_info):
+            if sources is not None:
+                api_meta_data.append(
+                    {
+                        "request_url" : api_info[1],
+                        "index" : api_info[0],
+                        "pretty_name" : sources[index]["pretty_name"],
+                        "pretty_color" : sources[index]["pretty_color"]
+                    }
+                )
+            else:
+                api_meta_data.append(
+                    {
+                        "request_url" : api_info[1],
+                        "index" : api_info[0]
+                    }
+                )
 
         # Present data, return json obj
         return json.dumps({
             "api_data" : timestamp_collection,
             "api_count" : len(data),
-            "api_names" : api_names
+            "api_meta_data" : api_meta_data
             #"api_meta" : self.get_meta_data()
         })
 
+    # Extract metadata for raw url, from sources.json
     def get_meta_data(self):
         sources = Util.get_source_content()
         if sources is None:

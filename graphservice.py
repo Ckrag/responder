@@ -1,16 +1,17 @@
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from graphgrapper import GraphGrapper
 import time
-from urllib.parse import urlparse
+from utils import Util
 
 hostName = "localhost"
 hostPort = 9001
+sources_content = None
 
 # Very inspired by http://stackoverflow.com/a/26652985
 class MyServer(BaseHTTPRequestHandler):
-    def do_GET(self):
 
-        json = str(GraphGrapper().get_data())
+    def do_GET(self):
+        json = str(GraphGrapper().get_data(Util.get_source_content()))
 
         response = "jsonpCallback({0})".format(json)
 
