@@ -11,7 +11,6 @@ class MyServer(BaseHTTPRequestHandler):
     def do_GET(self):
 
         json = str(GraphGrapper().get_data())
-        query_string = urlparse(self.path).query
 
         response = "jsonpCallback({0})".format(json)
 
