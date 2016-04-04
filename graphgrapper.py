@@ -72,7 +72,7 @@ class GraphGrapper(object):
                             {
                                 "index_ref" : self.__apis_info[index_j][0],
                                 "response_time" : time_tuple[1][1],
-                                "reponse_code" : time_tuple[1][2]
+                                "response_code" : time_tuple[1][2]
                             }
                         )
 
