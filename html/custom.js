@@ -1,10 +1,13 @@
 var requestInterval = 5000;
 var lineChart = null;
 var timespan = 40;
+var graphLifeSpan = 3600000; // 1 hour
 
 var chartData = null;
 
 var colorApiMap = [];
+
+var startTime = new Date().getTime();
 
 $( document ).ready(function() {
   init();
@@ -309,7 +312,16 @@ function startEventLoop(){
   loadData()
 
   var action = function() {
-      loadData();
+      // Continue running app for a certain time
+      now = new Date().getTime();
+
+      if(now < startTime + graphLifeSpan){
+        loadData();
+      } else {
+        //'reload' app when its been running too long. To avoid JS dying after several days of runtime
+        window.location.reload();
+      }
+      
   };
   setInterval(action, requestInterval);
 }
