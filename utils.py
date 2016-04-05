@@ -16,8 +16,6 @@ class Util(object):
                 if len(sources) > 0:
                     invalid_sources = Util.__get_invalid_sources(sources)
                     if len(invalid_sources) == 0:
-
-                        print("Successfully loaded " + str(len(sources)) + " source(s)")
                         return sources
                     else:
                         print("Found sources, but these sources were invalid: ")
@@ -48,3 +46,7 @@ class Util(object):
                 invalid_uris.append(source_url)
 
         return invalid_uris
+
+    @staticmethod
+    def validate_sources(sources):
+        pass
