@@ -155,63 +155,38 @@ function createDataSet(api_meta_data){
 function updateChartData(dataObject){
 
   var api_count = dataObject.api_count;
-  var api_names = dataObject.api_names;
+  var api_meta_data = dataObject.api_meta_data;
   var data = dataObject.api_data;
 
-  var newLabels = [];
-  var newResponseTimeSets = [];
-  var newResponseCodeSets = [];
-  var newReponseTimestamps = [];
-
   for (var i = 0; i < data.length; i++) {
-    newLabels[i] = convertUnixToReadable(data[i].timestamp);
-    newReponseTimestamps[i] = data[i].timestamp;
+    chartData.labels[i] = convertUnixToReadable(data[i].timestamp);
+    chartData.unixTimeStamps[i] = data[i].timestamp;
 
     var responses = data[i].api_responsetimes;
-
-    var responseSet = [];
-    var responseCodeSet = [];
-
+    
     for (var j = 0; j < responses.length; j++) {
-      responseSet.push(responses[j].response_time);
-      responseCodeSet.push(responses[j].response_code);
+      chartData.datasets[j].data.shift();
+      chartData.datasets[j].data.push(responses[j].response_time);
+      chartData.responseCodeSets[j].shift();
+      chartData.responseCodeSets[j].push(responses[j].response_code);
     };
-    newResponseTimeSets.push(responseSet);
-    newResponseCodeSets.push(responseCodeSet);
   };
 
-  var offsetIndex = getArrayChangeOffset(newReponseTimestamps, chartData.unixTimeStamps);
-
-  for (var i = 0; i < offsetIndex; i++) {
-
-    // Don't remove old entries until the graph shows full 'timespan'
-    if(chartData.labels.length === timespan){
-      lineChart.removeData();
-    }
-
-    var newData = [];
-    //update old datasets by iterating over them.
-    for (var j = 0; j < chartData.datasets.length; j++) {
-      //console.log("response lookup: " + newResponseTimeSets.length + " - 1 - " + i + "["+j+"]");
-      newData.push(newResponseTimeSets[newResponseTimeSets.length - offsetIndex + i][j]);
-    };
-    // Push new data to cause graphical update
-    console.log(lineChart);
-    lineChart.addData(newData, newLabels[newLabels.length - offsetIndex + i]);
-
-  };
-  
-  // Update the data
-  chartData.unixTimeStamps = newReponseTimestamps;
-  for (var i = 0; i < newResponseTimeSets.length; i++) {
-    for (var j = 0; j < chartData.datasets.length; j++) {
-      chartData.datasets[j][i] = newResponseTimeSets[i][j];
-      chartData.responseCodeSets[j][i] = newResponseCodeSets[i][j];
-    };
-  };  
+  lineChart.update();
 }
 
 // Method expects two arrays of equal length
+/**
+Since the n'th indentation has most matching items
+The new array must have n-1 new values, since this is the number of items before this index
+
+newArr:  [0,2,3,4,5,6]
+oldArr:        [4,5,6,3,7,4]
+                    |
+                3rd index from the top, is where most matches occur between the two lists
+
+example would return 3
+**/
 function getArrayChangeOffset(newArray, oldArray){
 
   //validity check
@@ -244,18 +219,6 @@ function getArrayChangeOffset(newArray, oldArray){
       highestValue = matchesForIndexOffset[i];
     }
   };
-
-  /**
-  Since the n'th indentation has most matching items
-  The new array must have n-1 new values, since this is the number of items before this index
-
-  newArr:  [0,2,3,4,5,6]
-  oldArr:        [4,5,6,3,7,4]
-                      |
-                  3rd index from the top, is where most matches occur between the two lists
-  
-  example would return 3
-  **/
 
   return highestIndex;
   
