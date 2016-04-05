@@ -1,8 +1,8 @@
+#!/usr/bin/python3
+
 import requests
 from multiprocessing.dummy import Pool as ThreadPool
 import time
-import json
-import os.path
 import datetime
 from database import SqlConnector
 from socket import error as SocketError
@@ -27,6 +27,7 @@ class Responser(object):
         if sources is not None:
             self.db = SqlConnector()
             self.sources_cache = sources
+            print("started..")
             return True
         return False
 
