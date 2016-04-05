@@ -1,4 +1,4 @@
-var requestInterval = 5000;
+var requestInterval = 3000;
 var lineChart = null;
 var timespan = 40;
 var graphLifeSpan = 3600000; // 1 hour
@@ -81,46 +81,25 @@ function configChart(chart, chartData){
     return tooltipItem[0].yLabel;
   }
 
-
   Chart.defaults.global.tooltips.callbacks.footer = function(tooltipItem, data) { 
     return data.responseCodeSets[tooltipItem[0].datasetIndex][tooltipItem[0].index];
   }
-
 
   lineChart = new Chart(chartContext, {
     type: 'line',
     data: chartData,
     options: {
-      scaleOverride : true,
-      scaleSteps : 3,
-      scaleStepWidth: 1,
-      scaleStartValue: 0,
-      onAnimationProgress: function(){
-      },
-      onAnimationComplete: function(){
+      scales: {
+        yAxes: [{
+          ticks: {
+            min: 0,
+            max: 5,
+            stepWidth: 1
+          }
+        }]
       }
     }
   });
-}
-
-function getResponseCode(evt){
-  value = evt.value;
-  label = evt.label;
-
-  for (var i = 0; i < chartData.labels.length; i++) {
-    if(chartData.labels[i] === label){
-      labelMatchIndex = i;
-
-
-      for (var j = 0; j < chartData.datasets.length; j++) {
-        if(chartData.datasets[j][i] == value){
-          return chartData.responseCodeSets[j][i];
-        }
-      };
-    }
-  };
-
-  return -1;
 }
 
 function createChartData(dataObject){
@@ -155,7 +134,6 @@ function createChartData(dataObject){
 
   // setup chart
   configChart(lineChart, chartData);
-
 }
 
 function createDataSet(api_meta_data){
@@ -218,6 +196,7 @@ function updateChartData(dataObject){
       newData.push(newResponseTimeSets[newResponseTimeSets.length - offsetIndex + i][j]);
     };
     // Push new data to cause graphical update
+    console.log(lineChart);
     lineChart.addData(newData, newLabels[newLabels.length - offsetIndex + i]);
 
   };
