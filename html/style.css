@@ -1,35 +1,4 @@
 #main-chart {
 	width: 100%;
-	height: 900px;
-}
-
-#api_info_box {
-	margin-top: 20px;
-	margin-left: 30px;
-	margin-bottom: 20px;
-}
-
-.api_entry {
-	display: inline-block;
-	float:left;
-	height: 25px;
-	display: flex;
-	flex-direction: column;
-	justify-content: center;
-}
-
-.api_entry + .api_entry {
-	margin-left: 20px
-}
-
-.api_name {
-	font-size: 20px;
-	display: inline-block;
-}
-
-.api_color {
-	display:inline-block;
-	width: 30px;
-	height:30px;
-	background-color: red;
+	height: 100%;
 }
