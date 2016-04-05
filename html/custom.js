@@ -57,11 +57,15 @@ function configChart(chart, chartData){
   var chart = document.getElementById('main-chart');
   var chartContext = chart.getContext('2d');
 
+  Chart.defaults.global.legend.position = "bottom";
+  Chart.defaults.global.legend.labels.fontSize = 25;
+  Chart.defaults.global.legend.labels.boxWidth = 80;
+
   Chart.defaults.global.tooltips.enabled = true;
   Chart.defaults.global.tooltips.bodyFontStyle = "normal";
   Chart.defaults.global.tooltips.footerFontStyle = "normal";
 
-  Chart.defaults.global.tooltips.titleFontSize = 15;
+  Chart.defaults.global.tooltips.titleFontSize = 18;
   Chart.defaults.global.tooltips.bodyFontSize = 15;
   Chart.defaults.global.tooltips.footerFontSize = 15;
 
