@@ -1,12 +1,13 @@
 import os.path
 import json
+import sys
 
 
 class Util(object):
 
     @staticmethod
     def get_source_content():
-        template_path = "templates/"
+        template_path = sys.path[0] + "/templates/"
         source_filename = "sources.json"
         source_template_filename = "sources_template.json"
 

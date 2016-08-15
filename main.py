@@ -4,6 +4,7 @@ import requests
 from multiprocessing.dummy import Pool as ThreadPool
 import time
 import datetime
+import sys
 from database import SqlConnector
 from socket import error as SocketError
 from utils import Util
@@ -13,7 +14,7 @@ class Responser(object):
 
     request_frequency_sec = 3
     db = None
-    logging_path = "logging/"
+    logging_path = sys.path[0] + "/logging/"
     userAgent = 'Your friendly neighborhood API-response-tracker - https://github.com/ckrag/responder'
 
     sources_cache = None
