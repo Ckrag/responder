@@ -1,5 +1,6 @@
 import sqlite3
 import time
+import sys
 
 """
 A is only allowed to close a database connection if it was also responsible for creating it.
@@ -7,7 +8,7 @@ Methods that receive an instance of a database(connection) should leave the clea
 """
 class SqlConnector(object):
 
-    __db_filename = "responder_db.sqlite"
+    __db_filename = sys.path[0] + "/responder_db.sqlite"
 
     def __init__(self):
         self.create_db_if_needed()
