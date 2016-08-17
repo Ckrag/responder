@@ -20,7 +20,7 @@ function init(){
 
 function loadData(){
   $.ajax({
-    url: "http://localhost:9001/module/responder",
+    url: "http://localhost:9001/module/responder/",
     type: "GET",
     dataType: "jsonp",
     format: "json",
